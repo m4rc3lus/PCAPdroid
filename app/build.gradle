@@ -1,9 +1,19 @@
 apply plugin: 'com.android.application'
+apply plugin: 'jacoco'
 
 android {
     compileSdkVersion 31
     buildToolsVersion "31.0.0"
     ndkVersion "23.1.7779620"
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.all {
+            jacoco {
+                includeNoLocationClasses = true
+            }
+        }
+    }
 
     defaultConfig {
         applicationId "com.emanuelef.remote_capture"
@@ -19,6 +29,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
+            testCoverageEnabled true
+
             // Use a different app ID for debug to allow its coexistence with release builds
             applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
@@ -50,7 +62,27 @@ android {
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+}
+
 dependencies {
+// Test
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    testImplementation 'androidx.test:core:1.4.0'
+    testImplementation 'org.mockito:mockito-core:1.10.19'
+
+    testImplementation "com.google.truth:truth:1.1.3"
+
+
 // AndroidX
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
